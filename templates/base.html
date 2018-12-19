@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% from 'macros.html' import  static_file %}
+<html>
+<head>
+{% block head%}
+ {% block metas %}
+         <meta charset="utf-8">
+        {% endblock metas %}
+
+<link rel="icon" type="image/x-icon" href="{{ url_for('static',filename="favicon.png")  }}">
+<title>{% block title %}Template - HelloFlask{% endblock %}</title>
+{% block styles %}
+	{{ static_file('css','style.css') }}
+{% endblock %}
+{% endblock %}
+</head>
+<body>
+<nav>
+	<ul><li><a href="{{ url_for('index') }}">Home</a></li></ul>
+</nav>
+<main>
+{% for message in get_flashed_messages() %}
+<div class='alert'>{{ message }}</div>
+{% endfor %}
+{% block content %}{% endblock %}
+</main>
+<footer>{% block footer %}{% endblock %}</footer>
+{% block scripts %}
+	<script src="{{ url_for('static',filename="js/jquery.min.js") }}"></script>
+	<script src="{{ url_for('static',filename="js/popper.min.js") }}"></script>
+	<script src="{{ url_for('static',filename="js/bootstrap.min.js") }}"></script>
+{% endblock %}
+</body>
+</html>

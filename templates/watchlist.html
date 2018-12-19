@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}
+{{ user.username }}'s Watchlist
+{% endblock %} 
+{% block content %}
+<a href="{{ url_for('index') }}"> &larr; Return</a>
+<h2><img src="{{ url_for('static',filename='qq.jpg') }}" width="50">{{ user.username }}</h2>
+{% if user.bio %}
+        <i>{{ user.bio }}</i>
+{% else %}
+        <i>This user has not provided a bio.</i>
+{% endif %}
+<h5>{{ user.username }}'s Watchlist({{ movies|length }}):</h5>
+<ul>
+        {% for movie in movies %}
+        <li>{{ movie.name }} - {{ movie.year }}</li>
+        {% endfor %}
+</ul>
+{% endblock %}
+

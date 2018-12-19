@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block metas %}
+    {{ super() }}
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+{% endblock %}
+
+{% block styles %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+{% endblock %}
+
+{% block content %}
+<form method="post">
+{{ form.csrf_token }}<br>
+<div class="formgroup">
+{{ form.username.label }}<br>{{ form.username(class='form-control') }}<br>
+</div>
+<div class="formgroup">
+{{ form.password.label }}<br>{{ form.password(class='form-control') }}<br>
+</div>
+
+{{ form.remember(class='form-check-input') }}<br> {{ form.remember.label }}<br>
+</div>
+{{ form.submit(class='btn btn-primary') }}<br>
+</form>
+{% endblock %}
