@@ -9,6 +9,7 @@ verify_ssl = true
 flask = "*"
 python-dotenv = "*"
 flask-wtf = "*"
+flask-ckeditor = "*"
 
 [requires]
 python_version = "2.7"

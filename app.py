@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from flask import Flask,session,make_response,jsonify,url_for,redirect,request,abort,render_template,flash,send_from_directory
-from forms import LoginForm,UploadForm
+from forms import LoginForm,UploadForm,RichTextForm
+from flask_ckeditor import CKEditor
 import os,uuid
 
 
@@ -8,6 +9,9 @@ app = Flask(__name__)
 app.secret_key=os.getenv('SECRET_KEY','aeteadfASDF')
 app.config['MAX_CONTENT_LENGTH']=3 * 1024 * 1024
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path,'uploads')
+app.config['CKEDITOR_SERVE_LOCAL'] = True
+ckeditor = CKEditor(app)
+
 
 user = {'username' : 'hb Zh','bio':'A boy love movies'}
 movies = [{'name' : 'The Big Short','year': '2015'},
@@ -102,6 +106,16 @@ def upload():
 @app.route('/upload/<path:filename>')
 def get_file(filename):
     return send_from_directory(app.config['UPLOAD_PATH'],filename)
+
+@app.route('/ckeditor',methods=['GET','POST'])
+def intergrate_ckeditor():
+    form = RichTextForm()
+    if form.validate_on_submit():
+        title = form.title.data
+        body = form.body.data
+        flash('Your post is published')
+        return render_template('post.html',title=title,body=body)
+    return render_template('ckeditor.html',form=form)
 
 @app.errorhandler(404)
 def page_not_found(e):

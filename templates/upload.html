@@ -1,9 +1,10 @@
 {% extends 'base.html' %}
+{% from 'macros.html' import form_field %}
+
 {% block content %}
 <form method="post" enctype="multipart/form-data">
 	{{ form.csrf_token }}
-	{{ form.photo.label }}<br>
-	{{ form.photo }}<br>
+	{{ form_field(form.photo) }}
 	{{ form.submit }}<br>
 
 </form>
