@@ -1,4 +1,4 @@
-from wtforms import Form,StringField,PasswordField,SubmitField,BooleanField
+from wtforms import Form,StringField,PasswordField,SubmitField,BooleanField,TextAreaField
 from wtforms.validators import DataRequired,length 
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField,FileRequired,FileAllowed
@@ -20,5 +20,10 @@ class RichTextForm(FlaskForm):
     body = CKEditorField('Body',validators=[DataRequired()])
     submit = SubmitField('Publish')
 
+class NewNoteForm(FlaskForm):
+    body = TextAreaField('Body',validators=[DataRequired()])
+    submit = SubmitField('Submit')
 
-
+class EditNoteForm(FlaskForm):
+    body = TextAreaField('Body',validators=[DataRequired()])
+    submit = SubmitField('Update')

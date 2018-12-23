@@ -1,8 +1,9 @@
 # -*- coding:utf-8 -*-
 from flask import Flask,session,make_response,jsonify,url_for,redirect,request,abort,render_template,flash,send_from_directory
-from forms import LoginForm,UploadForm,RichTextForm
+from forms import LoginForm,UploadForm,RichTextForm,NewNoteForm,EditNoteForm
 from flask_ckeditor import CKEditor
-import os,uuid
+from flask_sqlalchemy import SQLAlchemy
+import os,uuid,click
 
 
 app = Flask(__name__)
@@ -10,13 +11,23 @@ app.secret_key=os.getenv('SECRET_KEY','aeteadfASDF')
 app.config['MAX_CONTENT_LENGTH']=3 * 1024 * 1024
 app.config['UPLOAD_PATH'] = os.path.join(app.root_path,'uploads')
 app.config['CKEDITOR_SERVE_LOCAL'] = True
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL','sqlite:///'+os.path.join(app.root_path,'data.db'))
 ckeditor = CKEditor(app)
+db = SQLAlchemy(app)
 
 
 user = {'username' : 'hb Zh','bio':'A boy love movies'}
 movies = [{'name' : 'The Big Short','year': '2015'},
         {'name':'Too Big Too Fail','year' :'2011'},
 	{'name':'L\'Outsider','year':'2018'}]
+@app.cli.command()
+def initdb():
+    db.create_all()
+    click.echo ("init db")
+
+class Note(db.Model):
+    id = db.Column(db.Integer,primary_key = True)
+    body = db.Column(db.Text)
 
 def random_filename(filename):
     ext = os.path.splitext(filename)[1]
@@ -121,6 +132,30 @@ def intergrate_ckeditor():
 def page_not_found(e):
     return render_template('errors/404.html'),404
 
-	
+@app.route('/new',methods=['GET','POST'])
+def new_note():
+    form = NewNoteForm()
+    if form.validate_on_submit():
+        body = form.body.data
+        note = Note(body=body)
+        db.session.add(note)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('new_note.html',form=form)
 
+@app.route('/read')
+def read_note():
+    notes = Note.query.all()
+    return render_template('read_notes.html',notes=notes)
 
+@app.route('/edit/<int:note_id>',methods=['GET','POST'])
+def edit_note(note_id):
+    form = EditNoteForm()
+    note = Note.query.get(note_id)
+    if form.validate_on_submit():
+        note = Note.query.get(note_id)
+        note.body = form.body.data
+        db.session.commit()
+        return redirect(url_for('read_note'))
+    form.body = note.body
+    return render_template('edit_note.html',form=form)
