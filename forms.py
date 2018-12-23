@@ -26,4 +26,7 @@ class NewNoteForm(FlaskForm):
 
 class EditNoteForm(FlaskForm):
     body = TextAreaField('Body',validators=[DataRequired()])
-    submit = SubmitField('Update')
+    submit = SubmitField('Edit')
+
+class DeleteNoteForm(FlaskForm):
+    submit = SubmitField('Delete')

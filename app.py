@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 from flask import Flask,session,make_response,jsonify,url_for,redirect,request,abort,render_template,flash,send_from_directory
-from forms import LoginForm,UploadForm,RichTextForm,NewNoteForm,EditNoteForm
+from forms import LoginForm,UploadForm,RichTextForm,NewNoteForm,EditNoteForm,DeleteNoteForm
 from flask_ckeditor import CKEditor
 from flask_sqlalchemy import SQLAlchemy
 import os,uuid,click
@@ -146,7 +146,8 @@ def new_note():
 @app.route('/read')
 def read_note():
     notes = Note.query.all()
-    return render_template('read_notes.html',notes=notes)
+    form = DeleteNoteForm()
+    return render_template('read_notes.html',notes=notes,form=form)
 
 @app.route('/edit/<int:note_id>',methods=['GET','POST'])
 def edit_note(note_id):
@@ -157,5 +158,17 @@ def edit_note(note_id):
         note.body = form.body.data
         db.session.commit()
         return redirect(url_for('read_note'))
-    form.body = note.body
+    form.body.data = note.body
     return render_template('edit_note.html',form=form)
+
+@app.route('/delete/<int:note_id>',methods=['POST'])
+def delete_note(note_id):
+    form = DeleteNoteForm()
+    if form.validate_on_submit():
+        note = Note.query.get(note_id)
+        db.session.delete(note)
+        db.session.commit()
+        flash('your note is delete')
+    else:
+        abort(400)
+    return redirect(url_for('index')) 
